@@ -1,0 +1,31 @@
+# ───────────────────────────────────────────────
+#  Netlify Configuration
+# ───────────────────────────────────────────────
+
+[build]
+  publish = "dist/my-cart/browser"
+  command = "npm run build -- --configuration=production"
+
+# SPA fallback — redirect all routes to index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Security & caching headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
