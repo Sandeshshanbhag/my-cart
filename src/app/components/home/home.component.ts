@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
@@ -22,6 +22,8 @@ import { selectAuthUser } from '../../store/auth/auth.selectors';
 import { ProductCardComponent } from '../product-card/product-card.component';
 import { AdminService } from '../../services/admin.service';
 import { NotificationService, AppNotification } from '../../services/notification.service';
+import { ChatService } from '../../services/chat.service';
+import { ChatMessage } from '../../models/chat.model';
 import { Router } from '@angular/router';
 
 @Component({
@@ -31,7 +33,7 @@ import { Router } from '@angular/router';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent implements OnInit, OnDestroy, AfterViewChecked {
   searchQuery = '';
   searchResults$!: Observable<Product[]>;
   recentSearches$!: Observable<string[]>;
@@ -57,12 +59,21 @@ export class HomeComponent implements OnInit, OnDestroy {
   unreadCount = 0;
   loadingNotifications = false;
 
+  // Chat
+  isChatOpen = false;
+  chatMessages: ChatMessage[] = [];
+  chatInput = '';
+  isChatLoading = false;
+  private shouldScrollChat = false;
+  @ViewChild('chatMessagesContainer') chatMessagesContainer!: ElementRef;
+
   private searchSubject = new Subject<string>();
   private searchSubscription!: Subscription;
   private cartSubscription!: Subscription;
   private firestore = inject(Firestore);
   private adminService = inject(AdminService);
   private notificationService = inject(NotificationService);
+  private chatService = inject(ChatService);
   private router = inject(Router);
 
   constructor(private store: Store) {
@@ -251,6 +262,61 @@ export class HomeComponent implements OnInit, OnDestroy {
       case 'admin_removed': return '🚫';
       default: return 'ℹ️';
     }
+  }
+
+  // ---- Chat ----
+  ngAfterViewChecked(): void {
+    if (this.shouldScrollChat) {
+      this.scrollChatToBottom();
+      this.shouldScrollChat = false;
+    }
+  }
+
+  toggleChat(): void {
+    this.isChatOpen = !this.isChatOpen;
+    if (this.isChatOpen) {
+      this.showCart = false;
+      this.showNotifications = false;
+      this.shouldScrollChat = true;
+    }
+  }
+
+  async sendChatMessage(): Promise<void> {
+    const message = this.chatInput.trim();
+    if (!message || this.isChatLoading) return;
+
+    this.chatInput = '';
+    this.isChatLoading = true;
+    this.shouldScrollChat = true;
+
+    try {
+      await this.chatService.sendMessage(message);
+      this.chatMessages = this.chatService.getHistory();
+    } catch (error) {
+      console.error('Chat error:', error);
+    } finally {
+      this.isChatLoading = false;
+      this.shouldScrollChat = true;
+    }
+  }
+
+  sendQuickMessage(message: string): void {
+    this.chatInput = message;
+    this.sendChatMessage();
+  }
+
+  clearChat(): void {
+    this.chatService.clearHistory();
+    this.chatMessages = [];
+  }
+
+  private scrollChatToBottom(): void {
+    try {
+      const el = this.chatMessagesContainer?.nativeElement;
+      if (el) {
+        el.scrollTop = el.scrollHeight;
+      }
+    } catch (_err) { /* ignore */ }
   }
 
   logout(): void {
