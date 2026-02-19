@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
 import { take, switchMap } from 'rxjs/operators';
-import { Firestore, collection, query, where, getDocs, orderBy } from '@angular/fire/firestore';
+import { Firestore, collection, query, where, getDocs } from '@angular/fire/firestore';
 import { selectAuthUser } from '../../store/auth/auth.selectors';
 import { AdminService } from '../../services/admin.service';
 import { selectFavorites, selectCartItems } from '../../store/product/product.selectors';
@@ -83,13 +83,15 @@ export class ProfileComponent implements OnInit {
     this.loadingOrders = true;
     try {
       const ordersRef = collection(this.firestore, 'orders');
-      const q = query(ordersRef, where('userId', '==', email), orderBy('placedAt', 'desc'));
+      const q = query(ordersRef, where('userId', '==', email));
       const snapshot = await getDocs(q);
-      this.orders = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        orderId: doc.id.slice(0, 8).toUpperCase(),
-        ...doc.data(),
-      })) as Order[];
+      this.orders = snapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          orderId: doc.id.slice(0, 8).toUpperCase(),
+          ...doc.data(),
+        } as Order))
+        .sort((a, b) => new Date(b.placedAt).getTime() - new Date(a.placedAt).getTime());
       this.totalOrders = this.orders.length;
       this.totalSpent = this.orders.reduce((sum, o) => sum + (o.total || 0), 0);
       if (this.orders.length > 0) {
