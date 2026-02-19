@@ -66,7 +66,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px 40px;
+  padding: 16px 40px;
   background: white;
   border-bottom: 1px solid #f3f4f6;
 
@@ -139,7 +139,7 @@
 .checkout-content {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 28px 40px 60px;
+  padding: 20px 40px 40px;
 }
 
 .checkout-grid {
@@ -152,7 +152,7 @@
 .section-card {
   background: white;
   border-radius: 16px;
-  padding: 24px;
+  padding: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.03);
 }
 
@@ -160,10 +160,10 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 700;
   color: #111827;
-  margin: 0 0 20px;
+  margin: 0 0 14px;
 
   .item-count-badge {
     background: linear-gradient(135deg, #0ea5e9, #0d9488);
@@ -651,12 +651,12 @@
 .shipping-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 
   .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 14px;
+    gap: 12px;
 
     &.three-col {
       grid-template-columns: 1fr 1fr 1fr;
@@ -666,7 +666,7 @@
   .form-group {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 4px;
 
     &.full-width {
       grid-column: 1 / -1;
@@ -679,10 +679,10 @@
     }
 
     input {
-      padding: 10px 14px;
+      padding: 8px 12px;
       border: 1.5px solid #e5e7eb;
-      border-radius: 10px;
-      font-size: 14px;
+      border-radius: 8px;
+      font-size: 13px;
       color: #111827;
       background: #f9fafb;
       transition: all 0.2s;
@@ -710,20 +710,20 @@
 
 // ===== PAYMENT METHOD =====
 .payment-card {
-  margin-top: 20px;
+  margin-top: 14px;
 }
 
 .payment-options {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
 
 .payment-option {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 14px 16px;
+  gap: 10px;
+  padding: 12px 14px;
   border: 1.5px solid #e5e7eb;
   border-radius: 12px;
   cursor: pointer;
@@ -742,8 +742,8 @@
   }
 
   .payment-radio {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     border: 2px solid #d1d5db;
     display: flex;
@@ -753,8 +753,8 @@
     transition: border-color 0.2s;
 
     .radio-dot {
-      width: 10px;
-      height: 10px;
+      width: 9px;
+      height: 9px;
       border-radius: 50%;
       background: #0ea5e9;
       animation: scaleIn 0.2s ease;
@@ -766,22 +766,23 @@
   }
 
   .payment-icon {
-    font-size: 24px;
+    font-size: 20px;
     flex-shrink: 0;
   }
 
   .payment-info {
     flex: 1;
+    min-width: 0;
 
     strong {
       display: block;
-      font-size: 14px;
+      font-size: 13px;
       color: #1f2937;
-      margin-bottom: 2px;
+      margin-bottom: 1px;
     }
 
     span {
-      font-size: 12px;
+      font-size: 11px;
       color: #6b7280;
     }
   }
@@ -792,7 +793,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-top: 24px;
+  margin-top: 16px;
 
   .back-step-btn {
     display: flex;
