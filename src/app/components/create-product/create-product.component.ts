@@ -49,7 +49,7 @@ export class CreateProductComponent implements OnInit {
   private userTrackingService = inject(UserTrackingService);
   private notificationService = inject(NotificationService);
 
-  activeTab: 'create' | 'my-products' | 'manage-admins' | 'users' = 'create';
+  activeTab: 'create' | 'my-products' | 'manage-admins' | 'users' | 'feedback' = 'create';
   isSuperAdmin = false;
 
   product: ProductForm = {
@@ -103,6 +103,10 @@ export class CreateProductComponent implements OnInit {
   userSearchQuery = '';
   isAdmin = false;
 
+  // Feedback
+  allFeedback: any[] = [];
+  loadingFeedback = false;
+
   ngOnInit(): void {
     this.loadMyProducts();
     this.checkSuperAdmin();
@@ -132,7 +136,7 @@ export class CreateProductComponent implements OnInit {
     });
   }
 
-  switchTab(tab: 'create' | 'my-products' | 'manage-admins' | 'users'): void {
+  switchTab(tab: 'create' | 'my-products' | 'manage-admins' | 'users' | 'feedback'): void {
     this.activeTab = tab;
     if (tab === 'my-products') {
       this.loadMyProducts();
@@ -140,6 +144,8 @@ export class CreateProductComponent implements OnInit {
       this.loadAdmins();
     } else if (tab === 'users') {
       this.loadUsers();
+    } else if (tab === 'feedback') {
+      this.loadFeedback();
     }
   }
 
@@ -405,6 +411,38 @@ export class CreateProductComponent implements OnInit {
 
   get totalLogins(): number {
     return this.allUsers.reduce((sum, u) => sum + u.loginCount, 0);
+  }
+
+  // ---- Feedback ----
+  async loadFeedback(): Promise<void> {
+    this.loadingFeedback = true;
+    try {
+      const feedbackRef = collection(this.firestore, 'feedback');
+      const snapshot = await getDocs(feedbackRef);
+      this.allFeedback = snapshot.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+      }));
+      this.allFeedback.sort(
+        (a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
+      );
+    } catch (error) {
+      console.error('Failed to load feedback:', error);
+    } finally {
+      this.ngZone.run(() => {
+        this.loadingFeedback = false;
+      });
+    }
+  }
+
+  async deleteFeedback(feedbackId: string): Promise<void> {
+    try {
+      const feedbackDoc = doc(this.firestore, 'feedback', feedbackId);
+      await deleteDoc(feedbackDoc);
+      this.allFeedback = this.allFeedback.filter((f) => f.id !== feedbackId);
+    } catch (error) {
+      console.error('Failed to delete feedback:', error);
+    }
   }
 
   goBack(): void {

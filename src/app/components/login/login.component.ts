@@ -1,5 +1,4 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ElementRef, DestroyRef, afterNextRender, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   ReactiveFormsModule,
@@ -9,6 +8,7 @@ import {
   AbstractControl,
   ValidationErrors,
 } from '@angular/forms';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Store } from '@ngrx/store';
 import * as AuthActions from '../../store/auth/auth.actions';
 import {
@@ -19,22 +19,49 @@ import {
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
 export class LoginComponent {
-  loginForm: FormGroup;
-  showPassword = false;
-  error$;
-  loading$;
+  private fb = inject(FormBuilder);
+  private store = inject(Store);
+  private el = inject(ElementRef);
+  private destroyRef = inject(DestroyRef);
 
-  constructor(private fb: FormBuilder, private store: Store) {
-    this.error$ = this.store.select(selectAuthError);
-    this.loading$ = this.store.select(selectAuthLoading);
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, this.passwordValidator]],
+  showPassword = signal(false);
+
+  error = toSignal(this.store.select(selectAuthError));
+  loading = toSignal(this.store.select(selectAuthLoading));
+
+  loginForm: FormGroup = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, this.passwordValidator]],
+  });
+
+  constructor() {
+    // ── Angular 18: afterNextRender() replaces ngAfterViewInit + isPlatformBrowser ──
+    // Automatically only runs in the browser, never during SSR
+    afterNextRender(() => {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+            }
+          });
+        },
+        {
+          threshold: 0.15,
+          rootMargin: '0px 0px -60px 0px',
+        }
+      );
+
+      const revealElements = this.el.nativeElement.querySelectorAll('.reveal');
+      revealElements.forEach((el: Element) => observer.observe(el));
+
+      // ── Angular 18: DestroyRef replaces OnDestroy lifecycle hook ──
+      this.destroyRef.onDestroy(() => observer.disconnect());
     });
   }
 
@@ -64,7 +91,7 @@ export class LoginComponent {
   }
 
   togglePasswordVisibility(): void {
-    this.showPassword = !this.showPassword;
+    this.showPassword.update((v) => !v);
   }
 
   onSubmit(): void {
@@ -74,5 +101,9 @@ export class LoginComponent {
     } else {
       this.loginForm.markAllAsTouched();
     }
+  }
+
+  scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }

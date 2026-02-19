@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, inject, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Observable, Subject, Subscription, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, pairwise, skip, take, switchMap, filter } from 'rxjs/operators';
@@ -29,7 +29,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, ProductCardComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, ProductCardComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
@@ -66,6 +66,18 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewChecked {
   isChatLoading = false;
   private shouldScrollChat = false;
   @ViewChild('chatMessagesContainer') chatMessagesContainer!: ElementRef;
+
+  // Feedback
+  showFeedback = false;
+  feedbackSubmitted = false;
+  feedbackSubmitting = false;
+  private fb = inject(FormBuilder);
+  feedbackForm: FormGroup = this.fb.group({
+    name: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
+    type: ['suggestion', Validators.required],
+    message: ['', [Validators.required, Validators.minLength(10)]],
+  });
 
   private searchSubject = new Subject<string>();
   private searchSubscription!: Subscription;
@@ -159,6 +171,26 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   toggleCart(): void {
     this.showCart = !this.showCart;
+  }
+
+  getCartTotal(items: CartItem[]): number {
+    return items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  }
+
+  goToCheckout(): void {
+    this.showCart = false;
+    this.router.navigate(['/checkout']);
+  }
+
+  goToProfile(): void {
+    this.router.navigate(['/profile']);
+  }
+
+  scrollToFavorites(): void {
+    const el = document.getElementById('favorites-section');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   removeFromCart(productId: number): void {
@@ -317,6 +349,48 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewChecked {
         el.scrollTop = el.scrollHeight;
       }
     } catch (_err) { /* ignore */ }
+  }
+
+  // ---- Feedback ----
+  toggleFeedback(): void {
+    this.showFeedback = !this.showFeedback;
+    if (this.showFeedback) {
+      this.showCart = false;
+      this.showNotifications = false;
+      this.isChatOpen = false;
+      // Pre-fill name/email from logged in user
+      this.user$.pipe(take(1)).subscribe(user => {
+        if (user) {
+          this.feedbackForm.patchValue({
+            name: user.name || '',
+            email: user.email || '',
+          });
+        }
+      });
+    }
+  }
+
+  async submitFeedback(): Promise<void> {
+    if (this.feedbackForm.invalid) return;
+    this.feedbackSubmitting = true;
+    try {
+      const feedbackRef = collection(this.firestore, 'feedback');
+      await addDoc(feedbackRef, {
+        ...this.feedbackForm.value,
+        submittedAt: new Date().toISOString(),
+        status: 'new',
+      });
+      this.feedbackSubmitted = true;
+    } catch (error) {
+      console.error('Error submitting feedback:', error);
+    } finally {
+      this.feedbackSubmitting = false;
+    }
+  }
+
+  resetFeedback(): void {
+    this.feedbackForm.reset({ type: 'suggestion' });
+    this.feedbackSubmitted = false;
   }
 
   logout(): void {

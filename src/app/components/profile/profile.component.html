@@ -1,0 +1,337 @@
+<div class="profile-page">
+  <!-- Header -->
+  <header class="profile-header">
+    <button class="back-btn" (click)="goHome()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6" />
+      </svg>
+      Back to Shop
+    </button>
+    <h1>👤 My Profile</h1>
+    <div class="header-spacer"></div>
+  </header>
+
+  <div class="profile-content" *ngIf="user$ | async as user">
+    <!-- Profile Card -->
+    <div class="profile-sidebar">
+      <div class="user-card">
+        <div class="avatar">{{ getInitials(user.name) }}</div>
+        <h2>{{ user.name }}</h2>
+        <p class="user-email">{{ user.email }}</p>
+        <div class="user-stats">
+          <div class="stat">
+            <span class="stat-value">{{ totalOrders }}</span>
+            <span class="stat-label">Orders</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">${{ totalSpent | number:'1.2-2' }}</span>
+            <span class="stat-label">Total Spent</span>
+          </div>
+          <div class="stat" *ngIf="(favorites$ | async)?.length as favCount">
+            <span class="stat-value">{{ favCount }}</span>
+            <span class="stat-label">Favorites</span>
+          </div>
+        </div>
+        <p class="member-since" *ngIf="memberSince">Member since {{ memberSince }}</p>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="profile-nav">
+        <button [class.active]="activeTab === 'overview'" (click)="setTab('overview')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
+            <rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
+          </svg>
+          Overview
+        </button>
+        <button [class.active]="activeTab === 'orders'" (click)="setTab('orders')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <path d="M16 10a4 4 0 0 1-8 0" />
+          </svg>
+          Order History
+        </button>
+        <button [class.active]="activeTab === 'shipping'" (click)="setTab('shipping')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="1" y="3" width="15" height="13" /><polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+            <circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" />
+          </svg>
+          Shipping Info
+        </button>
+        <button [class.active]="activeTab === 'account'" (click)="setTab('account')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          Account Details
+        </button>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="profile-main">
+
+      <!-- ========== OVERVIEW TAB ========== -->
+      <div class="tab-content" *ngIf="activeTab === 'overview'">
+        <h3 class="tab-title">📊 Dashboard Overview</h3>
+
+        <!-- Quick Stats Cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-card-icon" style="background: #ecfdf5; color: #059669;">📦</div>
+            <div>
+              <p class="stat-card-value">{{ totalOrders }}</p>
+              <p class="stat-card-label">Total Orders</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon" style="background: #ecfeff; color: #0891b2;">💰</div>
+            <div>
+              <p class="stat-card-value">${{ totalSpent | number:'1.2-2' }}</p>
+              <p class="stat-card-label">Total Spent</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon" style="background: #fef2f2; color: #ef4444;">❤️</div>
+            <div>
+              <p class="stat-card-value">{{ (favorites$ | async)?.length || 0 }}</p>
+              <p class="stat-card-label">Favorites</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon" style="background: #fffbeb; color: #f59e0b;">🛒</div>
+            <div>
+              <p class="stat-card-value">{{ (cartItems$ | async)?.length || 0 }}</p>
+              <p class="stat-card-label">Cart Items</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="recent-orders" *ngIf="orders.length > 0">
+          <h4>Recent Orders</h4>
+          <div class="order-list">
+            <div class="order-row" *ngFor="let order of orders.slice(0, 5)" (click)="setTab('orders'); viewOrderDetail(order)">
+              <div class="order-row-left">
+                <span class="order-row-id">#{{ order.orderId }}</span>
+                <span class="order-row-date">{{ order.placedAt | date:'mediumDate' }}</span>
+              </div>
+              <div class="order-row-right">
+                <span class="order-row-total">${{ order.total | number:'1.2-2' }}</span>
+                <span class="order-status-badge" [style.background]="getStatusColor(order.status)">{{ order.status }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="!loadingOrders && orders.length === 0">
+          <span class="empty-icon">🛍️</span>
+          <h4>No orders yet</h4>
+          <p>Start shopping to see your orders here!</p>
+          <button class="primary-btn" (click)="goHome()">Browse Products</button>
+        </div>
+      </div>
+
+      <!-- ========== ORDERS TAB ========== -->
+      <div class="tab-content" *ngIf="activeTab === 'orders'">
+        <h3 class="tab-title">📦 Order History</h3>
+
+        <!-- Loading -->
+        <div class="loading-state" *ngIf="loadingOrders">
+          <div class="spinner"></div>
+          <p>Loading your orders...</p>
+        </div>
+
+        <!-- Order Detail View -->
+        <div class="order-detail" *ngIf="selectedOrder as order">
+          <button class="back-to-orders" (click)="closeOrderDetail()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+            Back to Orders
+          </button>
+
+          <div class="order-detail-header">
+            <div>
+              <h4>Order #{{ order.orderId }}</h4>
+              <p class="order-date">Placed on {{ order.placedAt | date:'fullDate' }}</p>
+            </div>
+            <span class="order-status-badge large" [style.background]="getStatusColor(order.status)">{{ order.status }}</span>
+          </div>
+
+          <!-- Items -->
+          <div class="detail-section">
+            <h5>🛍️ Items Ordered</h5>
+            <div class="detail-items">
+              <div class="detail-item" *ngFor="let item of order.items">
+                <img [src]="item.image" [alt]="item.title" />
+                <div class="detail-item-info">
+                  <p class="detail-item-title">{{ item.title }}</p>
+                  <p class="detail-item-qty">Qty: {{ item.quantity }}</p>
+                </div>
+                <span class="detail-item-price">${{ (item.price * item.quantity) | number:'1.2-2' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Price Breakdown -->
+          <div class="detail-section">
+            <h5>💰 Price Breakdown</h5>
+            <div class="price-rows">
+              <div class="price-row"><span>Subtotal</span><span>${{ order.subtotal | number:'1.2-2' }}</span></div>
+              <div class="price-row discount" *ngIf="order.discount > 0">
+                <span>Discount <span class="coupon-tag" *ngIf="order.couponCode">({{ order.couponCode }})</span></span>
+                <span>-${{ order.discount | number:'1.2-2' }}</span>
+              </div>
+              <div class="price-row"><span>Shipping</span><span>{{ order.shippingCost > 0 ? ('$' + (order.shippingCost | number:'1.2-2')) : 'FREE' }}</span></div>
+              <div class="price-row"><span>Tax</span><span>${{ order.tax | number:'1.2-2' }}</span></div>
+              <div class="price-row total"><span>Total</span><span>${{ order.total | number:'1.2-2' }}</span></div>
+            </div>
+          </div>
+
+          <!-- Shipping & Payment -->
+          <div class="detail-grid">
+            <div class="detail-section">
+              <h5>📍 Shipping Address</h5>
+              <div class="info-card">
+                <p><strong>{{ order.shipping.fullName }}</strong></p>
+                <p>{{ order.shipping.address }}</p>
+                <p>{{ order.shipping.city }}, {{ order.shipping.state }} {{ order.shipping.zipCode }}</p>
+                <p>{{ order.shipping.country }}</p>
+                <p>📞 {{ order.shipping.phone }}</p>
+                <p>📧 {{ order.shipping.email }}</p>
+              </div>
+            </div>
+            <div class="detail-section">
+              <h5>💳 Payment & Delivery</h5>
+              <div class="info-card">
+                <p><strong>Payment:</strong> {{ getPaymentLabel(order.paymentMethod) }}</p>
+                <p><strong>Estimated Delivery:</strong> {{ order.estimatedDelivery }}</p>
+                <p><strong>Order Status:</strong>
+                  <span class="status-text" [style.color]="getStatusColor(order.status)">{{ order.status | titlecase }}</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Orders List -->
+        <div *ngIf="!selectedOrder && !loadingOrders">
+          <div class="orders-grid" *ngIf="orders.length > 0">
+            <div class="order-card" *ngFor="let order of orders" (click)="viewOrderDetail(order)">
+              <div class="order-card-top">
+                <span class="order-card-id">#{{ order.orderId }}</span>
+                <span class="order-status-badge" [style.background]="getStatusColor(order.status)">{{ order.status }}</span>
+              </div>
+              <div class="order-card-items">
+                <img *ngFor="let item of order.items?.slice(0, 3)" [src]="item.image" [alt]="item.title" class="order-thumb" />
+                <span class="more-items" *ngIf="order.items && order.items.length > 3">+{{ order.items.length - 3 }}</span>
+              </div>
+              <div class="order-card-bottom">
+                <span class="order-card-date">{{ order.placedAt | date:'mediumDate' }}</span>
+                <span class="order-card-total">${{ order.total | number:'1.2-2' }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="empty-state" *ngIf="orders.length === 0">
+            <span class="empty-icon">📦</span>
+            <h4>No orders yet</h4>
+            <p>Your order history will appear here after your first purchase.</p>
+            <button class="primary-btn" (click)="goHome()">Start Shopping</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== SHIPPING TAB ========== -->
+      <div class="tab-content" *ngIf="activeTab === 'shipping'">
+        <h3 class="tab-title">🚚 Shipping Information</h3>
+
+        <div *ngIf="orders.length > 0">
+          <p class="tab-subtitle">Your most recent shipping details (from your latest order):</p>
+          <div class="shipping-detail-card">
+            <div class="shipping-row">
+              <span class="shipping-label">Full Name</span>
+              <span class="shipping-value">{{ orders[0].shipping.fullName }}</span>
+            </div>
+            <div class="shipping-row">
+              <span class="shipping-label">Email</span>
+              <span class="shipping-value">{{ orders[0].shipping.email }}</span>
+            </div>
+            <div class="shipping-row">
+              <span class="shipping-label">Phone</span>
+              <span class="shipping-value">{{ orders[0].shipping.phone }}</span>
+            </div>
+            <div class="shipping-row">
+              <span class="shipping-label">Address</span>
+              <span class="shipping-value">{{ orders[0].shipping.address }}</span>
+            </div>
+            <div class="shipping-row">
+              <span class="shipping-label">City</span>
+              <span class="shipping-value">{{ orders[0].shipping.city }}</span>
+            </div>
+            <div class="shipping-row">
+              <span class="shipping-label">State</span>
+              <span class="shipping-value">{{ orders[0].shipping.state }}</span>
+            </div>
+            <div class="shipping-row">
+              <span class="shipping-label">Postal/ZIP Code</span>
+              <span class="shipping-value">{{ orders[0].shipping.zipCode }}</span>
+            </div>
+            <div class="shipping-row">
+              <span class="shipping-label">Country</span>
+              <span class="shipping-value">{{ orders[0].shipping.country }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="!loadingOrders && orders.length === 0">
+          <span class="empty-icon">📍</span>
+          <h4>No shipping info yet</h4>
+          <p>Your shipping details will be saved after your first order.</p>
+        </div>
+      </div>
+
+      <!-- ========== ACCOUNT TAB ========== -->
+      <div class="tab-content" *ngIf="activeTab === 'account'">
+        <h3 class="tab-title">👤 Account Details</h3>
+
+        <div class="account-card">
+          <div class="account-row">
+            <span class="account-label">Full Name</span>
+            <span class="account-value">{{ user.name }}</span>
+          </div>
+          <div class="account-row">
+            <span class="account-label">Email Address</span>
+            <span class="account-value">{{ user.email }}</span>
+          </div>
+          <div class="account-row">
+            <span class="account-label">Account Type</span>
+            <span class="account-value">
+              <span class="account-badge" *ngIf="isAdmin$ | async as isAdmin" style="background: #ecfdf5; color: #059669;">Admin</span>
+              <span class="account-badge" *ngIf="!(isAdmin$ | async)" style="background: #ecfeff; color: #0891b2;">Customer</span>
+            </span>
+          </div>
+          <div class="account-row">
+            <span class="account-label">Total Orders</span>
+            <span class="account-value">{{ totalOrders }}</span>
+          </div>
+          <div class="account-row">
+            <span class="account-label">Total Spent</span>
+            <span class="account-value">${{ totalSpent | number:'1.2-2' }}</span>
+          </div>
+          <div class="account-row" *ngIf="memberSince">
+            <span class="account-label">Member Since</span>
+            <span class="account-value">{{ memberSince }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -13,6 +13,7 @@ import { authReducer } from './store/auth/auth.reducer';
 import { productReducer } from './store/product/product.reducer';
 import { AuthEffects } from './store/auth/auth.effects';
 import { ProductEffects } from './store/product/product.effects';
+import { hydrationMetaReducer } from './store/hydration.meta-reducer';
 import { environment } from '../environments/environment';
 import * as AuthActions from './store/auth/auth.actions';
 
@@ -31,6 +32,8 @@ export const appConfig: ApplicationConfig = {
     provideStore({
       auth: authReducer,
       product: productReducer,
+    }, {
+      metaReducers: [hydrationMetaReducer],
     }),
     provideEffects([AuthEffects, ProductEffects]),
     provideStoreDevtools({

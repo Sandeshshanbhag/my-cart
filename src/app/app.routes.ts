@@ -27,12 +27,28 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'checkout',
+    loadComponent: () =>
+      import('./components/checkout/checkout.component').then(
+        (m) => m.CheckoutComponent
+      ),
+    canActivate: [authGuard],
+  },
+  {
     path: 'create-product',
     loadComponent: () =>
       import('./components/create-product/create-product.component').then(
         (m) => m.CreateProductComponent
       ),
     canActivate: [authGuard, adminGuard],
+  },
+  {
+    path: 'profile',
+    loadComponent: () =>
+      import('./components/profile/profile.component').then(
+        (m) => m.ProfileComponent
+      ),
+    canActivate: [authGuard],
   },
   { path: '**', redirectTo: '/login' },
 ];

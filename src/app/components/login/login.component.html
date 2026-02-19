@@ -1,106 +1,594 @@
-<div class="login-container">
-  <div class="login-card">
-    <div class="login-header">
-      <div class="logo">
-        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+<div class="landing-page">
+
+  <!-- ===== HERO SECTION with Login ===== -->
+  <section class="hero-section">
+    <div class="hero-bg-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+    </div>
+
+    <div class="hero-content">
+      <div class="hero-text reveal fade-up">
+        <h1 class="hero-title">
+          <span class="title-line">Shopping.</span>
+          <span class="title-line gradient-text">Reimagined.</span>
+        </h1>
+        <p class="hero-subtitle">
+          The smartest way to discover, compare, and shop — all in one beautifully crafted experience.
+        </p>
+        <div class="scroll-indicator">
+          <span>Scroll to explore</span>
+          <div class="scroll-arrow">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 5v14M5 12l7 7 7-7" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-login reveal fade-up delay-1">
+        <div class="login-card">
+          <div class="login-header">
+            <div class="logo">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1" />
+                <circle cx="20" cy="21" r="1" />
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+              </svg>
+            </div>
+            <h1>My Cart</h1>
+            <p>Sign in to continue shopping</p>
+          </div>
+
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                  <polyline points="22,6 12,13 2,6" />
+                </svg>
+                <input id="email" type="email" formControlName="email" placeholder="you@example.com" />
+              </div>
+              @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+                <div class="error-messages">
+                  @if (loginForm.get('email')?.errors?.['required']) {
+                    <span>Email is required</span>
+                  }
+                  @if (loginForm.get('email')?.errors?.['email']) {
+                    <span>Please enter a valid email</span>
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="password">Password</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+                <input id="password" [type]="showPassword() ? 'text' : 'password'" formControlName="password"
+                  placeholder="Enter your password" />
+                <button type="button" class="toggle-password" (click)="togglePasswordVisibility()">
+                  @if (!showPassword()) {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  } @else {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <path
+                        d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                      <line x1="1" y1="1" x2="23" y2="23" />
+                    </svg>
+                  }
+                </button>
+              </div>
+
+              @if (loginForm.get('password')?.touched || loginForm.get('password')?.dirty) {
+              <div class="password-requirements">
+                <div class="requirement"
+                  [class.met]="!loginForm.get('password')?.errors?.['minLength'] && (loginForm.get('password')?.value?.length >= 8)">
+                  <span class="dot"></span> Minimum 8 characters
+                </div>
+                <div class="requirement"
+                  [class.met]="!loginForm.get('password')?.errors?.['uppercase']">
+                  <span class="dot"></span> One uppercase letter
+                </div>
+                <div class="requirement"
+                  [class.met]="!loginForm.get('password')?.errors?.['lowercase']">
+                  <span class="dot"></span> One lowercase letter
+                </div>
+                <div class="requirement"
+                  [class.met]="!loginForm.get('password')?.errors?.['number']">
+                  <span class="dot"></span> One number
+                </div>
+                <div class="requirement"
+                  [class.met]="!loginForm.get('password')?.errors?.['specialChar']">
+                  <span class="dot"></span> One special character
+                </div>
+              </div>
+              }
+            </div>
+
+            @if (error()) {
+              <div class="auth-error">
+                {{ error() }}
+              </div>
+            }
+
+            <button type="submit" class="login-btn" [disabled]="loginForm.invalid || loading()">
+              @if (!loading()) {
+                <span>Sign In</span>
+              } @else {
+                <span class="spinner"></span>
+              }
+            </button>
+          </form>
+
+          <div class="switch-auth">
+            Don't have an account? <a routerLink="/register">Sign Up</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== WHY MY CART SECTION ===== -->
+  <section class="section section-why">
+    <div class="section-inner">
+      <div class="section-header reveal fade-up">
+        <span class="section-tag">Why My Cart</span>
+        <h2 class="section-title">Not just another<br><span class="gradient-text">shopping app.</span></h2>
+        <p class="section-desc">
+          We built My Cart to be the one place where smart shopping meets beautiful design.
+          Every feature is crafted to save you time and enhance your experience.
+        </p>
+      </div>
+
+      <div class="value-cards">
+        <div class="value-card reveal fade-up delay-1">
+          <div class="value-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+            </svg>
+          </div>
+          <h3>Lightning Fast</h3>
+          <p>Built with cutting-edge Angular technology for blazing fast performance. Every interaction feels instant.</p>
+        </div>
+
+        <div class="value-card reveal fade-up delay-2">
+          <div class="value-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+          </div>
+          <h3>Secure by Design</h3>
+          <p>Firebase authentication with robust password policies. Your data is encrypted and protected at every step.</p>
+        </div>
+
+        <div class="value-card reveal fade-up delay-3">
+          <div class="value-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+              <line x1="8" y1="21" x2="16" y2="21" />
+              <line x1="12" y1="17" x2="12" y2="21" />
+            </svg>
+          </div>
+          <h3>Works Everywhere</h3>
+          <p>Fully responsive design that looks stunning on any device — desktop, tablet, or mobile. Shop anywhere, anytime.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FEATURES SHOWCASE SECTION ===== -->
+  <section class="section section-features">
+    <div class="section-inner">
+      <div class="section-header reveal fade-up">
+        <span class="section-tag">Features</span>
+        <h2 class="section-title">Everything you need.<br><span class="gradient-text">Nothing you don't.</span></h2>
+      </div>
+
+      <div class="feature-showcase">
+        <!-- Feature 1: Smart Search -->
+        <div class="feature-row reveal slide-right">
+          <div class="feature-visual">
+            <div class="feature-mockup search-mockup">
+              <div class="mockup-search-bar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <span class="typing-text">Wireless headphones...</span>
+              </div>
+              <div class="mockup-results">
+                <div class="mockup-product-item"></div>
+                <div class="mockup-product-item"></div>
+                <div class="mockup-product-item"></div>
+              </div>
+            </div>
+          </div>
+          <div class="feature-info">
+            <div class="feature-number">01</div>
+            <h3>Smart Search</h3>
+            <p>Find exactly what you're looking for with our intelligent search engine. Filter by name, category, or price range — results appear instantly as you type.</p>
+          </div>
+        </div>
+
+        <!-- Feature 2: Cart Management -->
+        <div class="feature-row reverse reveal slide-left">
+          <div class="feature-visual">
+            <div class="feature-mockup cart-mockup">
+              <div class="mockup-cart-item">
+                <div class="cart-item-img"></div>
+                <div class="cart-item-details">
+                  <div class="cart-item-name"></div>
+                  <div class="cart-item-price">$49.99</div>
+                </div>
+                <div class="cart-item-qty">
+                  <span>−</span><span>2</span><span>+</span>
+                </div>
+              </div>
+              <div class="mockup-cart-item">
+                <div class="cart-item-img"></div>
+                <div class="cart-item-details">
+                  <div class="cart-item-name"></div>
+                  <div class="cart-item-price">$129.99</div>
+                </div>
+                <div class="cart-item-qty">
+                  <span>−</span><span>1</span><span>+</span>
+                </div>
+              </div>
+              <div class="cart-total">
+                <span>Total</span>
+                <span class="total-price">$229.97</span>
+              </div>
+            </div>
+          </div>
+          <div class="feature-info">
+            <div class="feature-number">02</div>
+            <h3>Smart Cart</h3>
+            <p>Add, remove, and adjust quantities effortlessly. Watch your cart update in real-time with smooth animations. Your cart persists across sessions.</p>
+          </div>
+        </div>
+
+        <!-- Feature 3: Favorites -->
+        <div class="feature-row reveal slide-right">
+          <div class="feature-visual">
+            <div class="feature-mockup favorites-mockup">
+              <div class="fav-grid">
+                <div class="fav-item">
+                  <div class="fav-img"></div>
+                  <svg class="fav-heart" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                    fill="#ef4444" stroke="#ef4444" stroke-width="2">
+                    <path
+                      d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                  </svg>
+                </div>
+                <div class="fav-item">
+                  <div class="fav-img"></div>
+                  <svg class="fav-heart" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                    fill="#ef4444" stroke="#ef4444" stroke-width="2">
+                    <path
+                      d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                  </svg>
+                </div>
+                <div class="fav-item">
+                  <div class="fav-img"></div>
+                  <svg class="fav-heart" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                    fill="#ef4444" stroke="#ef4444" stroke-width="2">
+                    <path
+                      d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                  </svg>
+                </div>
+                <div class="fav-item">
+                  <div class="fav-img"></div>
+                  <svg class="fav-heart" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                    fill="#ef4444" stroke="#ef4444" stroke-width="2">
+                    <path
+                      d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="feature-info">
+            <div class="feature-number">03</div>
+            <h3>Favorites Collection</h3>
+            <p>Save products you love with a single tap. Build your personal wishlist and never lose track of items you want to buy later.</p>
+          </div>
+        </div>
+
+        <!-- Feature 4: AI ChatBot -->
+        <div class="feature-row reverse reveal slide-left">
+          <div class="feature-visual">
+            <div class="feature-mockup chat-mockup">
+              <div class="mockup-chat-header">
+                <span class="chat-dot"></span> CartBot AI
+              </div>
+              <div class="mockup-chat-messages">
+                <div class="chat-msg bot">Hi! I can help you find products 🛍️</div>
+                <div class="chat-msg user">Show me headphones under $100</div>
+                <div class="chat-msg bot">Here are 3 headphones in your budget! 🎧</div>
+              </div>
+              <div class="mockup-chat-input">
+                <span>Ask me anything...</span>
+              </div>
+            </div>
+          </div>
+          <div class="feature-info">
+            <div class="feature-number">04</div>
+            <h3>AI Shopping Assistant</h3>
+            <p>Meet CartBot — your personal AI shopping assistant. Ask about products, get recommendations, compare prices, and get instant help right inside the app.</p>
+          </div>
+        </div>
+
+        <!-- Feature 5: Admin Dashboard -->
+        <div class="feature-row reveal slide-right">
+          <div class="feature-visual">
+            <div class="feature-mockup admin-mockup">
+              <div class="admin-header">Admin Dashboard</div>
+              <div class="admin-stats">
+                <div class="admin-stat">
+                  <div class="stat-num">248</div>
+                  <div class="stat-label">Products</div>
+                </div>
+                <div class="admin-stat">
+                  <div class="stat-num">1.2K</div>
+                  <div class="stat-label">Users</div>
+                </div>
+                <div class="admin-stat">
+                  <div class="stat-num">89%</div>
+                  <div class="stat-label">Rating</div>
+                </div>
+              </div>
+              <div class="admin-actions">
+                <div class="admin-action-btn">+ Add Product</div>
+                <div class="admin-action-btn">Manage Users</div>
+              </div>
+            </div>
+          </div>
+          <div class="feature-info">
+            <div class="feature-number">05</div>
+            <h3>Powerful Admin Panel</h3>
+            <p>Full admin dashboard with product management, user tracking, role-based access, and real-time notifications. Super admin controls for complete oversight.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SELLER CTA SECTION ===== -->
+  <section class="section section-seller">
+    <div class="section-inner">
+      <div class="seller-container reveal scale-up">
+        <div class="seller-badge">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          <span>For Sellers</span>
+        </div>
+
+        <h2 class="seller-title">Want to sell on<br><span class="gradient-text">My Cart?</span></h2>
+        <p class="seller-desc">
+          Are you a seller looking to reach more customers? List your products on My Cart and start growing your business today.
+        </p>
+
+        <div class="seller-steps">
+          <div class="seller-step reveal fade-up delay-1">
+            <div class="seller-step-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="8.5" cy="7" r="4" />
+                <line x1="20" y1="8" x2="20" y2="14" />
+                <line x1="23" y1="11" x2="17" y2="11" />
+              </svg>
+            </div>
+            <h4>Sign Up as a User</h4>
+            <p>Create your free account just like any shopper.</p>
+          </div>
+
+          <div class="seller-step-arrow reveal fade-up delay-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </div>
+
+          <div class="seller-step reveal fade-up delay-2">
+            <div class="seller-step-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+            </div>
+            <h4>Request Admin Access</h4>
+            <p>Contact the super admin to get seller privileges for your account.</p>
+          </div>
+
+          <div class="seller-step-arrow reveal fade-up delay-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </div>
+
+          <div class="seller-step reveal fade-up delay-3">
+            <div class="seller-step-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+            </div>
+            <h4>Add Your Products</h4>
+            <p>Start listing products with images, prices, and categories — visible to all shoppers instantly.</p>
+          </div>
+        </div>
+
+        <div class="seller-note reveal fade-up delay-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="16" x2="12" y2="12" />
+            <line x1="12" y1="8" x2="12.01" y2="8" />
+          </svg>
+          <span>Admin access is granted by the super admin. Once approved, you'll see the "Add Product" option in your dashboard.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== STATS SECTION ===== -->
+  <section class="section section-stats">
+    <div class="section-inner">
+      <div class="stats-grid">
+        <div class="stat-block reveal fade-up delay-1">
+          <div class="stat-value" data-target="50">50+</div>
+          <div class="stat-name">Products Available</div>
+        </div>
+        <div class="stat-block reveal fade-up delay-2">
+          <div class="stat-value" data-target="99">99%</div>
+          <div class="stat-name">Uptime Guaranteed</div>
+        </div>
+        <div class="stat-block reveal fade-up delay-3">
+          <div class="stat-value">24/7</div>
+          <div class="stat-name">AI Assistant Support</div>
+        </div>
+        <div class="stat-block reveal fade-up delay-4">
+          <div class="stat-value">∞</div>
+          <div class="stat-name">Shopping Possibilities</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== HOW IT WORKS SECTION ===== -->
+  <section class="section section-how">
+    <div class="section-inner">
+      <div class="section-header reveal fade-up">
+        <span class="section-tag">How It Works</span>
+        <h2 class="section-title">Three steps to<br><span class="gradient-text">happy shopping.</span></h2>
+      </div>
+
+      <div class="steps-container">
+        <div class="step reveal fade-up delay-1">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Create Your Account</h3>
+            <p>Sign up in seconds with just your email and a secure password. No credit card required.</p>
+          </div>
+        </div>
+        <div class="step-connector reveal fade-up delay-2"></div>
+        <div class="step reveal fade-up delay-2">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>Discover Products</h3>
+            <p>Browse our curated collection, use smart search, or ask CartBot AI to find exactly what you need.</p>
+          </div>
+        </div>
+        <div class="step-connector reveal fade-up delay-3"></div>
+        <div class="step reveal fade-up delay-3">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>Add to Cart & Enjoy</h3>
+            <p>Build your cart, save favorites, and enjoy a seamless shopping experience every single time.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TECH STACK SECTION ===== -->
+  <section class="section section-tech">
+    <div class="section-inner">
+      <div class="section-header reveal fade-up">
+        <span class="section-tag">Built With</span>
+        <h2 class="section-title">Powered by<br><span class="gradient-text">modern technology.</span></h2>
+      </div>
+
+      <div class="tech-grid">
+        <div class="tech-item reveal fade-up delay-1">
+          <div class="tech-logo">🅰️</div>
+          <span>Angular 18</span>
+        </div>
+        <div class="tech-item reveal fade-up delay-1">
+          <div class="tech-logo">🔥</div>
+          <span>Firebase</span>
+        </div>
+        <div class="tech-item reveal fade-up delay-2">
+          <div class="tech-logo">📦</div>
+          <span>NgRx</span>
+        </div>
+        <div class="tech-item reveal fade-up delay-2">
+          <div class="tech-logo">🤖</div>
+          <span>Gemini AI</span>
+        </div>
+        <div class="tech-item reveal fade-up delay-3">
+          <div class="tech-logo">🚀</div>
+          <span>Netlify</span>
+        </div>
+        <div class="tech-item reveal fade-up delay-3">
+          <div class="tech-logo">⚡</div>
+          <span>GitHub Actions</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FINAL CTA SECTION ===== -->
+  <section class="section section-cta">
+    <div class="section-inner">
+      <div class="cta-content reveal scale-up">
+        <h2 class="cta-title">Ready to start<br><span class="gradient-text">shopping smarter?</span></h2>
+        <p class="cta-desc">Join My Cart today and experience the future of online shopping.</p>
+        <button class="cta-button" (click)="scrollToTop()">
+          Get Started — It's Free
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="landing-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="9" cy="21" r="1" />
           <circle cx="20" cy="21" r="1" />
           <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
         </svg>
+        <span>My Cart</span>
       </div>
-      <h1>My Cart</h1>
-      <p>Sign in to continue shopping</p>
+      <p class="footer-text">Built with ❤️ by Sandesh Shanbhag</p>
     </div>
+  </footer>
 
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-      <!-- Email -->
-      <div class="form-group">
-        <label for="email">Email Address</label>
-        <div class="input-wrapper">
-          <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-            <polyline points="22,6 12,13 2,6" />
-          </svg>
-          <input id="email" type="email" formControlName="email" placeholder="you@example.com" />
-        </div>
-        <div class="error-messages"
-          *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
-          <span *ngIf="loginForm.get('email')?.errors?.['required']">Email is required</span>
-          <span *ngIf="loginForm.get('email')?.errors?.['email']">Please enter a valid email</span>
-        </div>
-      </div>
-
-      <!-- Password -->
-      <div class="form-group">
-        <label for="password">Password</label>
-        <div class="input-wrapper">
-          <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-          </svg>
-          <input id="password" [type]="showPassword ? 'text' : 'password'" formControlName="password"
-            placeholder="Enter your password" />
-          <button type="button" class="toggle-password" (click)="togglePasswordVisibility()">
-            <!-- Eye icon -->
-            <svg *ngIf="!showPassword" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-              <circle cx="12" cy="12" r="3" />
-            </svg>
-            <!-- Eye-off icon -->
-            <svg *ngIf="showPassword" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path
-                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-              <line x1="1" y1="1" x2="23" y2="23" />
-            </svg>
-          </button>
-        </div>
-
-        <!-- Password requirements -->
-        <div class="password-requirements"
-          *ngIf="loginForm.get('password')?.touched || loginForm.get('password')?.dirty">
-          <div class="requirement"
-            [class.met]="!loginForm.get('password')?.errors?.['minLength'] && (loginForm.get('password')?.value?.length >= 8)">
-            <span class="dot"></span> Minimum 8 characters
-          </div>
-          <div class="requirement"
-            [class.met]="!loginForm.get('password')?.errors?.['uppercase']">
-            <span class="dot"></span> One uppercase letter
-          </div>
-          <div class="requirement"
-            [class.met]="!loginForm.get('password')?.errors?.['lowercase']">
-            <span class="dot"></span> One lowercase letter
-          </div>
-          <div class="requirement"
-            [class.met]="!loginForm.get('password')?.errors?.['number']">
-            <span class="dot"></span> One number
-          </div>
-          <div class="requirement"
-            [class.met]="!loginForm.get('password')?.errors?.['specialChar']">
-            <span class="dot"></span> One special character
-          </div>
-        </div>
-      </div>
-
-      <!-- Auth Error -->
-      <div class="auth-error" *ngIf="error$ | async as error">
-        {{ error }}
-      </div>
-
-      <!-- Submit Button -->
-      <button type="submit" class="login-btn" [disabled]="loginForm.invalid || (loading$ | async)">
-        <span *ngIf="!(loading$ | async)">Sign In</span>
-        <span *ngIf="loading$ | async" class="spinner"></span>
-      </button>
-    </form>
-
-    <!-- Register Link -->
-    <div class="switch-auth">
-      Don't have an account? <a routerLink="/register">Sign Up</a>
-    </div>
-  </div>
 </div>
