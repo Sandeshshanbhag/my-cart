@@ -53,6 +53,9 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewChecked {
   adminRequestSubmitting = false;
   adminRequestSuccess = false;
 
+  // Profile menu
+  showProfileMenu = false;
+
   // Notifications
   showNotifications = false;
   notifications: AppNotification[] = [];
@@ -171,6 +174,10 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   toggleCart(): void {
     this.showCart = !this.showCart;
+    if (this.showCart) {
+      this.showProfileMenu = false;
+      this.showNotifications = false;
+    }
   }
 
   getCartTotal(items: CartItem[]): number {
@@ -180,6 +187,14 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewChecked {
   goToCheckout(): void {
     this.showCart = false;
     this.router.navigate(['/checkout']);
+  }
+
+  toggleProfileMenu(): void {
+    this.showProfileMenu = !this.showProfileMenu;
+    if (this.showProfileMenu) {
+      this.showCart = false;
+      this.showNotifications = false;
+    }
   }
 
   goToProfile(): void {
@@ -261,6 +276,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.showNotifications = !this.showNotifications;
     if (this.showNotifications) {
       this.showCart = false;
+      this.showProfileMenu = false;
     }
   }
 
