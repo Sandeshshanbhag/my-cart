@@ -1,14 +1,15 @@
 .product-card {
-  background: white;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   transition: all 0.25s ease;
   position: relative;
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    border-color: rgba(14, 165, 233, 0.3);
   }
 }
 
@@ -16,22 +17,23 @@
   position: absolute;
   top: 12px;
   right: 12px;
-  background: white;
-  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   padding: 8px;
   border-radius: 50%;
   cursor: pointer;
   z-index: 2;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
-  color: #9ca3af;
+  color: rgba(255, 255, 255, 0.6);
 
   &:hover {
     transform: scale(1.1);
     color: #ef4444;
+    background: rgba(255, 255, 255, 0.15);
   }
 
   &.active {
@@ -45,7 +47,8 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: #f9fafb;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 
   img {
     max-width: 100%;
@@ -66,7 +69,7 @@
 .product-title {
   font-size: 14px;
   font-weight: 600;
-  color: #1f2937;
+  color: #ffffff;
   margin: 0 0 6px;
   line-height: 1.4;
   display: -webkit-box;
@@ -97,12 +100,12 @@
   .rating-text {
     font-size: 13px;
     font-weight: 600;
-    color: #374151;
+    color: #ffffff;
   }
 
   .review-count {
     font-size: 12px;
-    color: #9ca3af;
+    color: #a0a0b8;
   }
 }
 
@@ -116,7 +119,7 @@
 .product-price {
   font-size: 22px;
   font-weight: 700;
-  color: #1f2937;
+  color: #0ea5e9;
 }
 
 .add-to-cart-btn {

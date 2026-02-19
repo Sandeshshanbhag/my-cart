@@ -1,4 +1,12 @@
 <div class="home-container">
+
+  <!-- Animated Background Shapes -->
+  <div class="home-bg-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+  </div>
+
   <!-- Top Navigation Bar -->
   <nav class="navbar">
     <div class="nav-brand">
@@ -253,7 +261,7 @@
   <main class="main-content">
     <!-- Search Section -->
     <div class="search-section">
-      <h2>What are you looking for?</h2>
+      <h2 class="reveal fade-up">What are you looking for?</h2>
       <div class="search-bar">
         <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
           fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -314,7 +322,7 @@
     <!-- Favorites Section -->
     <div class="favorites-section" id="favorites-section" *ngIf="(favorites$ | async) as favs">
       <div *ngIf="favs.length > 0">
-        <div class="section-header">
+        <div class="section-header reveal fade-up">
           <h3>
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#ef4444"
               stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

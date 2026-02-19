@@ -34,6 +34,8 @@ import { Router } from '@angular/router';
   styleUrl: './home.component.scss',
 })
 export class HomeComponent implements OnInit, OnDestroy, AfterViewChecked {
+  private el = inject(ElementRef);
+  private revealObserver: IntersectionObserver | null = null;
   searchQuery = '';
   searchResults$!: Observable<Product[]>;
   recentSearches$!: Observable<string[]>;
@@ -136,6 +138,28 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.loadNotifications(user.email);
       }
     });
+
+    // Scroll reveal animations (Apple-style)
+    this.revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -60px 0px' }
+    );
+    this.observeRevealElements();
+
+    // Watch for dynamically added reveal elements
+    const mutationObserver = new MutationObserver(() => this.observeRevealElements());
+    mutationObserver.observe(this.el.nativeElement, { childList: true, subtree: true });
+  }
+
+  private observeRevealElements(): void {
+    const elements = this.el.nativeElement.querySelectorAll('.reveal:not(.visible)');
+    elements.forEach((el: Element) => this.revealObserver?.observe(el));
   }
 
   ngOnDestroy(): void {
@@ -145,6 +169,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewChecked {
     if (this.cartSubscription) {
       this.cartSubscription.unsubscribe();
     }
+    this.revealObserver?.disconnect();
   }
 
   onSearchInput(): void {
